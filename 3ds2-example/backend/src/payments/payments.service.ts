@@ -7,6 +7,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { v4 as uuid } from "uuid";
 import { Client, CheckoutAPI } from "@adyen/api-library";
+import { assertDefined } from "../utils/validators";
 import {
   PaymentMethodsResponse,
   PaymentResponse,
@@ -94,6 +95,11 @@ export class PaymentsService {
    * @returns PaymentResponse
    */
   async postForPaymentsNative({ data, url }): Promise<PaymentResponse> {
+    assertDefined(data, "Payment data is required");
+    assertDefined(data.paymentMethod, "paymentMethod is required");
+    assertDefined(data.browserInfo, "browserInfo is required");
+    assertDefined(url, "Return URL is required");
+
     const reference = uuid(); // generate a unique reference id
 
     const authenticationData: AuthenticationData = {
@@ -181,6 +187,11 @@ export class PaymentsService {
    * @returns PaymentResponse
    */
   async postForPaymentsRedirect({ data, url }): Promise<PaymentResponse> {
+    assertDefined(data, "Payment data is required");
+    assertDefined(data.paymentMethod, "paymentMethod is required");
+    assertDefined(data.browserInfo, "browserInfo is required");
+    assertDefined(url, "Return URL is required");
+
     const reference = uuid(); // generate a unique reference id
 
     const paymentRequestData: PaymentRequest = {
@@ -235,6 +246,7 @@ export class PaymentsService {
    * @returns PaymentDetailsResponse
    */
   async postForPaymentDetails({ details }: { details: PaymentCompletionDetails }): Promise<PaymentDetailsResponse> {
+    assertDefined(details, "payment details are required");
     const paymentDetailsResponse: PaymentDetailsResponse = await this.paymentsAPI.paymentsDetails({ details });
 
     return paymentDetailsResponse;
@@ -275,6 +287,7 @@ export class PaymentsService {
    * @returns CreateCheckoutSessionResponse
    */
   async postForSessions({ url }): Promise<CreateCheckoutSessionResponse> {
+    assertDefined(url, "Return URL is required");
     const reference = uuid(); // generate a unique reference id
 
     const sessionsRequestData: CreateCheckoutSessionRequest = {
